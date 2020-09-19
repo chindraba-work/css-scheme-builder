@@ -21,11 +21,10 @@ Perl script to generate a pair of color schemes (dark and light) for CSS usage
 Requirements
 ================================================================================
 
-Requires Perl (ver. 5.26 or higher) with the following modules installed:
+*  Requires Perl (ver. 5.26 or higher) with the following module installed:
+   -  Color::Rgb
 
--  Graphics::ColorNames
--  Graphics::ColorNames::WWW
--  Color::Rgb
+*  A copy of `rgb.txt` somewhere in the system
 
 
 Installation

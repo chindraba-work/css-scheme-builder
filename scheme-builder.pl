@@ -39,6 +39,40 @@ use Color::Rgb;
 #   inclusion in a CSS declaration.
 
 
+my %color_set_dark = (
+    background          => '',
+    surface             => '',
+    primary             => '',
+    primary_variant     => '',
+    secondary           => '',
+    secondary_variant   => '',
+    tertiary            => '',
+    tertiary_variant    => '',
+    error               => '',
+    on_background       => '',
+    on_surface          => '',
+    on_primary          => '',
+    on_secondary        => '',
+    on_tertiary         => '',
+    on_error            => '',
+);
+my %color_set_lite = (
+    background          => '',
+    surface             => '',
+    primary             => '',
+    primary_variant     => '',
+    secondary           => '',
+    secondary_variant   => '',
+    tertiary            => '',
+    tertiary_variant    => '',
+    error               => '',
+    on_background       => '',
+    on_surface          => '',
+    on_primary          => '',
+    on_secondary        => '',
+    on_tertiary         => '',
+    on_error            => '',
+);
 
 my $colors  = new Color::Rgb(rgb_txt=>'/usr/share/vim/vim82/rgb.txt');
 

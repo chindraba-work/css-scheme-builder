@@ -28,6 +28,8 @@ Requirements
    -  Color::Rgb
 
 *  A copy of `rgb.txt` somewhere in the system
+   -  A copy of the `rgb.txt` file from the Vim project is included in the
+      `assets` directory.
 
 
 Installation

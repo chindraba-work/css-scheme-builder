@@ -39,39 +39,39 @@ use Color::Rgb;
 #   inclusion in a CSS declaration.
 
 
-my %color_set_dark = (
-    background          => '',
-    surface             => '',
-    primary             => '',
-    primary_variant     => '',
-    secondary           => '',
-    secondary_variant   => '',
-    tertiary            => '',
-    tertiary_variant    => '',
-    error               => '',
-    on_background       => '',
-    on_surface          => '',
-    on_primary          => '',
-    on_secondary        => '',
-    on_tertiary         => '',
-    on_error            => '',
-);
 my %color_set_lite = (
-    background          => '',
-    surface             => '',
-    primary             => '',
-    primary_variant     => '',
-    secondary           => '',
+    primary             => '#6200ee',
+    primary_variant     => '#3700b3',
+    secondary           => '#03dac6',
+    secondary_variant   => '#018786',
+    tertiary            => '',
+    tertiary_variant    => '',
+    background          => '#ffffff',
+    surface             => '#ffffff',
+    error               => '#cf6679',
+    on_primary          => '#ffffff',
+    on_secondary        => '#000000',
+    on_tertiary         => '',
+    on_background       => '#000000',
+    on_surface          => '#000000',
+    on_error            => '#ffffff',
+);
+my %color_set_dark = (
+    primary             => '#bb86fc',
+    primary_variant     => '#3700b3',
+    secondary           => '#03dac6',
     secondary_variant   => '',
     tertiary            => '',
     tertiary_variant    => '',
+    background          => '#121212',
+    surface             => '#121212',
     error               => '',
-    on_background       => '',
-    on_surface          => '',
-    on_primary          => '',
-    on_secondary        => '',
+    on_primary          => '#000000',
+    on_secondary        => '#000000',
     on_tertiary         => '',
-    on_error            => '',
+    on_background       => '#ffffff',
+    on_surface          => '#ffffff',
+    on_error            => '#000000',
 );
 
 my $colors  = new Color::Rgb(rgb_txt=>'/usr/share/vim/vim82/rgb.txt');
@@ -323,4 +323,36 @@ sub demo {
     say sprintf 'Adding a second overlay of %s at %.4f opacity is %s.',
         $second_hex, $second_rate, $state_css_hex;
 }
+
+my %surface_level_covers = (
+# Level     Transparency
+ '00dp' =>  .00,
+ '01dp' =>  .05,
+ '02dp' =>  .07,
+ '03dp' =>  .08,
+ '04dp' =>  .09,
+ '06dp' =>  .11,
+ '08dp' =>  .12,
+ '12dp' =>  .14,
+ '16dp' =>  .15,
+ '24dp' =>  .16,
+);
+
+my %state_covers = (
+    enabled  => .00,
+    hovered  => .04,
+    focused  => .12,
+    pressed  => .10,
+    dragged  => .08,
+    disabled => .12,
+);
+ my %dark_text_intensity = (
+     high   => .87,
+     medium => .60,
+     low    => .37,
+ );
+
+
+
+
 

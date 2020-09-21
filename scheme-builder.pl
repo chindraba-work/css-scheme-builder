@@ -168,8 +168,125 @@ sub double_overlay {
     )
 }
 
+sub demo {
 
+    # Converting named colors to available formats
+    my $name    = 'BurlyWood';
+    say sprintf '%s as HEX code is %s.', $name, $colors->hex($name);
+    say sprintf '%s as CSS hex is %s.', $name, $colors->hex($name, '#');
+    say sprintf '%s as RGB tuple is [%d %d %d].', $name, $colors->rgb($name);
+    say sprintf '%s as RGB string is %s.', $name, $colors->rgb($name, ',');
+    say sprintf '%s as HSL tuple is [%.2f %.2f %.2f].', $name, rgb2hsl $colors->rgb($name);
+    say sprintf '%s as HSL string is %s.', $name, scalar rgb2hsl $colors->rgb($name);
+    say sprintf '%s as HSL string is %s.', $name, scalar rgb2hsl $colors->rgb($name), ":";
+    say sprintf '%s as HSV tuple is [%.2f %.2f %.2f].', $name, rgb2hsv $colors->rgb($name);
+    say sprintf '%s as HSV string is %s.', $name, scalar rgb2hsv $colors->rgb($name);
+    say sprintf '%s as HSV string is %s.', $name, scalar rgb2hsv $colors->rgb($name), ":";
 
+    # Converting hex color codes to available formats
+    my $hex_code = '6495ed';
+    say sprintf '%s as RGB tuple is [%d %d %d].', $hex_code, $colors->hex2rgb($hex_code);
+    say sprintf '%s as RGB string is %s.', $hex_code, $colors->hex2rgb($hex_code, ',');
+    say sprintf '%s as HSL tuple is [%.2f %.2f %.2f].', $hex_code, rgb2hsl $colors->hex2rgb($hex_code) ;
+    say sprintf '%s as HSL string is %s.', $hex_code, scalar rgb2hsl $colors->hex2rgb($hex_code);
+    say sprintf '%s as HSL string is %s.', $hex_code, scalar rgb2hsl $colors->hex2rgb($hex_code), ":";
+    say sprintf '%s as HSV tuple is [%.2f %.2f %.2f].', $hex_code, rgb2hsv $colors->hex2rgb($hex_code);
+    say sprintf '%s as HSV string is %s.', $hex_code, scalar rgb2hsv $colors->hex2rgb($hex_code);
+    say sprintf '%s as HSV string is %s.', $hex_code, scalar rgb2hsv $colors->hex2rgb($hex_code), ":";
 
+    # Converting CSS-style hex color codes to available formats
+    my $hex_css = '#123456';
+    say sprintf '%s as RGB tuple is [%d %d %d].', $hex_css, $colors->hex2rgb($hex_css);
+    say sprintf '%s as RGB string is %s.', $hex_css, $colors->hex2rgb($hex_css, ',');
+    say sprintf '%s as HSL tuple is [%.2f %.2f %.2f].', $hex_css, rgb2hsl $colors->hex2rgb($hex_css);
+    say sprintf '%s as HSL string is %s.', $hex_css, scalar rgb2hsl $colors->hex2rgb($hex_css);
+    say sprintf '%s as HSL string is %s.', $hex_css, scalar rgb2hsl $colors->hex2rgb($hex_css), ":";
+    say sprintf '%s as HSV tuple is [%.2f %.2f %.2f].', $hex_css, rgb2hsv $colors->hex2rgb($hex_css);
+    say sprintf '%s as HSV tuple is %s.', $hex_css, scalar rgb2hsv $colors->hex2rgb($hex_css);
+    say sprintf '%s as HSV tuple is %s.', $hex_css, scalar rgb2hsv $colors->hex2rgb($hex_css), ":";
 
+    # Converting RGB tuples (0-255) into available formats
+    my @rgb_tuple = (3, 218, 198);
+    say sprintf 'RGB tuple [%d %d %d] as hex code is %s.', @rgb_tuple, $colors->rgb2hex(@rgb_tuple);
+    say sprintf 'RGB tuple [%d %d %d] as CSS hex is %s.', @rgb_tuple, $colors->rgb2hex(@rgb_tuple, "#");
+    say sprintf 'RGB tuple [%d %d %d] as HSL tuple is [%.2f %.2f %.2f].', @rgb_tuple, rgb2hsl @rgb_tuple;
+    say sprintf 'RGB tuple [%d %d %d] as HSL string is %s', @rgb_tuple, scalar rgb2hsl @rgb_tuple;
+    say sprintf 'RGB tuple [%d %d %d] as HSL string is %s', @rgb_tuple, scalar rgb2hsl @rgb_tuple, ":";
+    say sprintf 'RGB tuple [%d %d %d] as HSV tuple is [%.2f %.2f %.2f].', @rgb_tuple, rgb2hsv @rgb_tuple;
+    say sprintf 'RGB tuple [%d %d %d] as HSV string is %s', @rgb_tuple, scalar rgb2hsv @rgb_tuple;
+    say sprintf 'RGB tuple [%d %d %d] as HSV string is %s', @rgb_tuple, scalar rgb2hsv @rgb_tuple, ":";
+
+    # Converting RGB strings, '172,0,32', into available formats
+    my $rgb_string = '176,0,32';
+    say sprintf 'RGB string %s as hex code is %s.', $rgb_string, $colors->rgb2hex(split ',', $rgb_string);
+    say sprintf 'RGB string %s as CSS hex is %s.', $rgb_string, $colors->rgb2hex(split(',', $rgb_string), "#");
+    say sprintf 'RGB string %s as HSL tuple is [%.2f %.2f %.2f].', $rgb_string, rgb2hsl split ',', $rgb_string;
+    say sprintf 'RGB string %s as HSL string is %s', $rgb_string, scalar rgb2hsl split ',', $rgb_string;
+    say sprintf 'RGB string %s as HSL string is %s', $rgb_string, scalar rgb2hsl split(',', $rgb_string), ":";
+    say sprintf 'RGB string %s as HSV tuple is [%.2f %.2f %.2f].', $rgb_string, rgb2hsv split ',', $rgb_string;
+    say sprintf 'RGB string %s as HSV string is %s', $rgb_string, scalar rgb2hsv split ',', $rgb_string;
+    say sprintf 'RGB string %s as HSV string is %s', $rgb_string, scalar rgb2hsv split(',', $rgb_string), ":";
+
+    # Converting HSL tuples into available formats
+    my @hsl_tuple = (262,52,47);
+    say sprintf 'HSL tuple [%.f %.f %.f] as hex code is %s.', @hsl_tuple, $colors->rgb2hex(hsl2rgb @hsl_tuple);
+    say sprintf 'HSL tuple [%.f %.f %.f] as CSS hex is %s.', @hsl_tuple, $colors->rgb2hex(hsl2rgb @hsl_tuple, '#');
+    say sprintf 'HSL tuple [%.f %.f %.f] as RGB tuple is [%.2f %.2f %.2f.', @hsl_tuple, (hsl2rgb @hsl_tuple);
+    say sprintf 'HSL tuple [%.f %.f %.f] as RGB string is %s.', @hsl_tuple, scalar hsl2rgb @hsl_tuple;
+    say sprintf 'HSL tuple [%.f %.f %.f] as RGB string is %s.', @hsl_tuple, scalar hsl2rgb @hsl_tuple, ':';
+    say sprintf 'HSL tuple [%.f %.f %.f] as HSV tuple is [%.2f %.2f %.2f.', @hsl_tuple, rgb2hsv hsl2rgb @hsl_tuple;
+    say sprintf 'HSL tuple [%.f %.f %.f] as HSV string is %s.', @hsl_tuple, scalar rgb2hsv hsl2rgb @hsl_tuple;
+    say sprintf 'HSL tuple [%.f %.f %.f] as HSV string is %s.', @hsl_tuple, scalar rgb2hsv hsl2rgb @hsl_tuple, ':';
+
+    # Converting HSL strings into available formats
+    my $hsl_string = '262,52,47';
+    say sprintf 'HSL string  %s as hex code is %s.', $hsl_string, $colors->rgb2hex(hsl2rgb split ',', $hsl_string);
+    say sprintf 'HSL string  %s as CSS hex is %s.', $hsl_string, $colors->rgb2hex(hsl2rgb split(',', $hsl_string), '#');
+    say sprintf 'HSL string  %s as RGB tuple is [%.2f %.2f %.2f.', $hsl_string, hsl2rgb split ',', $hsl_string;
+    say sprintf 'HSL string  %s as RGB string is %s.', $hsl_string, scalar hsl2rgb split ',', $hsl_string;
+    say sprintf 'HSL string  %s as RGB string is %s.', $hsl_string, scalar hsl2rgb split(',', $hsl_string), ':' ;
+    say sprintf 'HSL string  %s as HSV tuple is [%.2f %.2f %.2f.', $hsl_string, rgb2hsv hsl2rgb split ',', $hsl_string;
+    say sprintf 'HSL string  %s as HSV string is %s.', $hsl_string, scalar rgb2hsv hsl2rgb split ',', $hsl_string;
+    say sprintf 'HSL string  %s as HSV string is %s.', $hsl_string, scalar rgb2hsv hsl2rgb split(',', $hsl_string), ':';
+
+    # Converting HSV tuples into available formats
+    my @hsv_tuple = (329,78,15);
+    say sprintf 'HSV tuple [%.f %.f %.f] as hex code is %s.', @hsv_tuple, $colors->rgb2hex(hsv2rgb @hsv_tuple );
+    say sprintf 'HSV tuple [%.f %.f %.f] as CSS hex is %s.', @hsv_tuple, $colors->rgb2hex(hsv2rgb @hsv_tuple , '#');
+    say sprintf 'HSV tuple [%.f %.f %.f] as RGB tuple is [%.2f %.2f %.2f.', @hsv_tuple, hsv2rgb @hsv_tuple;
+    say sprintf 'HSV tuple [%.f %.f %.f] as RGB string is %s.', @hsv_tuple, scalar hsv2rgb @hsv_tuple;
+    say sprintf 'HSV tuple [%.f %.f %.f] as RGB string is %s.', @hsv_tuple, scalar hsv2rgb @hsv_tuple, ':';
+    say sprintf 'HSV tuple [%.f %.f %.f] as HSL tuple is [%.2f %.2f %.2f.', @hsv_tuple, rgb2hsl hsv2rgb @hsv_tuple;
+    say sprintf 'HSV tuple [%.f %.f %.f] as HSL string is %s.', @hsv_tuple, scalar rgb2hsl hsv2rgb @hsv_tuple;
+    say sprintf 'HSV tuple [%.f %.f %.f] as HSL string is %s.', @hsv_tuple, scalar rgb2hsl hsv2rgb @hsv_tuple, ':';
+
+    # Converting HSL strings into available formats
+    my $hsv_string = '329,78,15';
+    say sprintf 'HSV string  %s as hex code is %s.', $hsv_string, $colors->rgb2hex(hsv2rgb split ',', $hsv_string);
+    say sprintf 'HSV string  %s as CSS hex is %s.', $hsv_string, $colors->rgb2hex(hsv2rgb split(',', $hsv_string), '#');
+    say sprintf 'HSV string  %s as RGB tuple is [%.2f %.2f %.2f.', $hsv_string, hsv2rgb split ',', $hsv_string;
+    say sprintf 'HSV string  %s as RGB string is %s.', $hsv_string, scalar hsv2rgb split ',', $hsv_string ;
+    say sprintf 'HSV string  %s as RGB string is %s.', $hsv_string, scalar hsv2rgb split(',', $hsv_string), ':';
+    say sprintf 'HSV string  %s as HSL tuple is [%.2f %.2f %.2f.', $hsv_string, rgb2hsl hsv2rgb split ',', $hsv_string;
+    say sprintf 'HSV string  %s as HSL string is %s.', $hsv_string, scalar rgb2hsl hsv2rgb split ',', $hsv_string;
+    say sprintf 'HSV string  %s as HSL string is %s.', $hsv_string, scalar rgb2hsl hsv2rgb split(',', $hsv_string), ':';
+
+    # Adding a semi-opaque overlay of some color to a solid base color
+    # such as to create elevations in Material UI themes
+    my ($base_hex, $cover_hex, $cover_rate, $second_hex, $second_rate) = ('#663399','#fafafa', 0.13, '00d000', 0.18);
+    my @base_rgb_tuple = $colors->hex2rgb($base_hex);
+    my @cover_rgb_tuple = $colors->hex2rgb($cover_hex);
+    my @surface_rgb_tuple = add_overlay @base_rgb_tuple, @cover_rgb_tuple, $cover_rate;
+    my $surface_css_hex = $colors->rgb2hex(@surface_rgb_tuple, '#');
+    say sprintf 'Base color of %s with an overlay of %s as %.4f opacity is %s.',
+        $base_hex, $cover_hex, $cover_rate, $surface_css_hex;
+
+    # Adding a pair of semi-opaque overlays, in steps, to a solid base color
+    # such as to add an action state to an elevated surface in Material UI themes
+    my @second_rgb_tuple = $colors->hex2rgb($second_hex);
+    my @state_rgb_tuple = double_overlay @base_rgb_tuple, @cover_rgb_tuple, $cover_rate, @second_rgb_tuple, $second_rate;
+    my $state_css_hex = $colors->rgb2hex(@state_rgb_tuple, '#');
+    say sprintf 'Adding a second overlay of %s at %.4f opacity is %s.',
+        $second_hex, $second_rate, $state_css_hex;
+}
 

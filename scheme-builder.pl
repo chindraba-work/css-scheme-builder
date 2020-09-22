@@ -1,6 +1,7 @@
 #! /usr/bin/env perl
-# Make a new color scheme using the data hard-coded here
 # SPDX-License-Identifier: MIT
+
+# Make a new color scheme using the data hard-coded here
 
 use 5.026001;
 use strict;
@@ -23,20 +24,21 @@ use Color::Rgb;
 #   -  HSV values as a string: '218.54,57.81,92.94' is Cornflower Blue
 #
 #   Note that the string values do not include the bracketing information and
-#   the HSL/HSV strings, and tuples, do not include the degree or percent markers.
-#   The HSL values, in string or tuple format, are reported with Hue in the range
-#   of 0 to 360 degrees, Saturation, Value, and Lightness as percentages, in the
-#   range of 0 to 100 (the values are already multiplied by 100).
+#   the HSL/HSV strings, and tuples, do not include the degree or percent
+#   markers. The HSL values, in string or tuple format, are reported with Hue
+#   in the range of 0 to 360 degrees, Saturation, Value, and Lightness as
+#   percentages, in the range of 0 to 100 (the values are already multiplied by
+#   100).
 #
-#   To use the HSL values in a CSS declaration the extra information will need to
-#   be applied. This is slightly easier with the tuple than the string.
+#   To use the HSL values in a CSS declaration the extra information will need
+#   to be applied. This is slightly easier with the tuple than the string.
 #       Using the tuple, @hsv_tuple, the CSS format could be made with
 #         $css_hsl = sprintf 'hsl(%.2fdef, %.2f%%, %.2f%%)', @hsl_tuple;
 #       Using the string, $hsl_string, the CSS format coule be made with
-#         $css_hsl = sprintf 'hsl(%.2fdeg, %.2f%%, %.2f%%)', split ',', $hsl_string
-#   Similar treatment is needed to use the return values in other cases as well. Only
-#   the results of $colors->rgb2hex($red, $green, $blue, '#') are suitable for direct
-#   inclusion in a CSS declaration.
+#         $css_hsl = sprintf 'hsl(%.2fdeg,%.2f%%,%.2f%%)',split ',',$hsl_string
+#   Similar treatment is needed to use the return values in other cases as well.
+#   Only the results of rgb2hex($red, $green, $blue, '#') are suitable for
+#   direct inclusion in a CSS declaration.
 
 
 my %color_set_lite = (
@@ -76,9 +78,14 @@ my %color_set_dark = (
 
 my $colors  = new Color::Rgb(rgb_txt=>'/usr/share/vim/vim82/rgb.txt');
 
+sub rgb2hex {
+# convert RGB tuple in 0-255 format to hex code, possibly prefixed with a character
+    return sprintf "%s%.2x%.2x%.2x",$_[3]||'',map{($_>=0&&$_<=255)?nearest(1,$_):0;}@_[0..2];
+}
+
+sub _rgbf2hue {
 # find the hue from tuple of rgb percentages
 # used in conversion to hsl and hsv
-sub _rgbf2hue {
     my ($red_factor, $green_factor, $blue_factor) = @_;
     my $hue = 0;
     my $chroma_max = max ($red_factor, $green_factor, $blue_factor);
@@ -92,8 +99,8 @@ sub _rgbf2hue {
     return ($hue, $chroma_max, $chroma_min, $chroma_delta);
 }
 
-# convert tuple of rgb values to hsv tuple. rgb data in 0-255 format
 sub rgb2hsv {
+# convert tuple of rgb values to hsv tuple. rgb data in 0-255 format
     my ($hue, $chroma_max, $chroma_min, $chroma_delta) = _rgbf2hue( map { $_ / 255 } @_[0..2] );
     my ($sat, $val) = (0, 0);
     $sat = $chroma_delta / $chroma_max  unless 0 == $chroma_max;
@@ -102,8 +109,8 @@ sub rgb2hsv {
     return join $_[3] || ',', nearest(.01, $hue), nearest(.001, 100 * $sat), nearest(.001, 100 * $val); 
 }
 
-# convert tuple of rgb values to hsl tuple. rgb data in 0-255 format
 sub rgb2hsl {
+# convert tuple of rgb values to hsl tuple. rgb data in 0-255 format
     my ($hue, $chroma_max, $chroma_min, $chroma_delta) = _rgbf2hue( map { $_ / 255 } @_[0..2] );
     my ($sat, $lum) = (0, 0);
     $lum = ($chroma_max + $chroma_min) / 2;
@@ -112,10 +119,10 @@ sub rgb2hsl {
     return join $_[3] || ',', nearest(.01, $hue), nearest(.001, 100 * $sat), nearest(.001, 100 * $lum); 
 }
 
+sub _hcm2rgbf {
 # convert hue, chroma, minum value into rgb percentage tuple
 # Used in converting hsl and hsv to rgb
 # Internal use only
-sub _hcm2rgbf {
     my ($hue, $chroma, $minum) = @_;
     my ($red_factor, $green_factor, $blue_factor) = ($minum, $minum, $minum);
     my $cross = $chroma * (1 - abs( fmod(($hue / 60), 2) - 1 ));
@@ -141,8 +148,8 @@ sub _hcm2rgbf {
     return ($red_factor, $green_factor, $blue_factor);
 }
 
-# convert hsv tuple into rgb tuple in 0-255 format
 sub hsv2rgb {
+# convert hsv tuple into rgb tuple in 0-255 format
     my ($hue, $sat, $val) = ($_[0], $_[1]/100, $_[2]/100);
     my $chroma = $val * $sat;
     my $minum = $val - $chroma;
@@ -150,8 +157,8 @@ sub hsv2rgb {
     return join $_[3] || ',' , map { nearest(.01, $_ * 255) } (_hcm2rgbf($hue, $chroma, $minum));
 }
 
-# convert hsl tuple into rgb tuple in 0-255 format
 sub hsl2rgb {
+# convert hsl tuple into rgb tuple in 0-255 format
     my ($hue, $sat, $lum) = ($_[0], $_[1]/100, $_[2]/100);
     my $chroma = (1 - abs($lum * 2 - 1)) * $sat;
     my $minum = $lum - $chroma / 2;
@@ -159,21 +166,21 @@ sub hsl2rgb {
     return join $_[3] || ',' , map { nearest(.01, $_ * 255) } (_hcm2rgbf($hue, $chroma, $minum));
 }
 
+sub _blend_colors {
 # blend a single color pair, one opaque and one semi-opaque.
 # the supplied pair of color value can be either percent or 0-255, provided
 # both are in the same format. The factor is a float between 0 and 1, inclusive.
 # The returned value is in the same format, percent or 0-255, as the source.
-sub _blend_colors {
     my ($base_color, $overlay_color, $factor) = @_;
     my $new_color = $factor * $overlay_color + (1 - $factor) * $base_color;
     return $new_color;
 }
 
+sub add_overlay {
 # blend two rgb color tuples with the given opacity for the second color
 # the pair of tuples must be in the same format (either percentage or 0-255 formats)
 # internally and collectively. Return is a tuple in the same format of
 # the resulting color with 100% opacity.
-sub add_overlay {
     my (
         $base_red, $base_green, $base_blue,
         $overlay_red, $overlay_green, $overlay_blue,
@@ -186,10 +193,10 @@ sub add_overlay {
     );
 }
 
+sub double_overlay {
 # Add two overlays, applying the second color as an overlay to the first, 
 # the applying the third color as an overlay to the result of the first pair.
 # Used to apply a state overlay onto a surface level overlay of the base color.
-sub double_overlay {
     my ($base_red, $base_green, $base_blue,
         $overlay_red, $overlay_green, $overlay_blue, $overlay_factor,
         $accent_red, $accent_green, $accent_blue, $accent_factor
@@ -241,8 +248,8 @@ sub demo {
 
     # Converting RGB tuples (0-255) into available formats
     my @rgb_tuple = (3, 218, 198);
-    say sprintf 'RGB tuple [%d %d %d] as hex code is %s.', @rgb_tuple, $colors->rgb2hex(@rgb_tuple);
-    say sprintf 'RGB tuple [%d %d %d] as CSS hex is %s.', @rgb_tuple, $colors->rgb2hex(@rgb_tuple, "#");
+    say sprintf 'RGB tuple [%d %d %d] as hex code is %s.', @rgb_tuple, rgb2hex @rgb_tuple;
+    say sprintf 'RGB tuple [%d %d %d] as CSS hex is %s.', @rgb_tuple, rgb2hex @rgb_tuple, "#";
     say sprintf 'RGB tuple [%d %d %d] as HSL tuple is [%.2f %.2f %.2f].', @rgb_tuple, rgb2hsl @rgb_tuple;
     say sprintf 'RGB tuple [%d %d %d] as HSL string is %s', @rgb_tuple, scalar rgb2hsl @rgb_tuple;
     say sprintf 'RGB tuple [%d %d %d] as HSL string is %s', @rgb_tuple, scalar rgb2hsl @rgb_tuple, ":";
@@ -252,8 +259,8 @@ sub demo {
 
     # Converting RGB strings, '172,0,32', into available formats
     my $rgb_string = '176,0,32';
-    say sprintf 'RGB string %s as hex code is %s.', $rgb_string, $colors->rgb2hex(split ',', $rgb_string);
-    say sprintf 'RGB string %s as CSS hex is %s.', $rgb_string, $colors->rgb2hex(split(',', $rgb_string), "#");
+    say sprintf 'RGB string %s as hex code is %s.', $rgb_string, rgb2hex split ',', $rgb_string;
+    say sprintf 'RGB string %s as CSS hex is %s.', $rgb_string, rgb2hex split(',', $rgb_string), "#";
     say sprintf 'RGB string %s as HSL tuple is [%.2f %.2f %.2f].', $rgb_string, rgb2hsl split ',', $rgb_string;
     say sprintf 'RGB string %s as HSL string is %s', $rgb_string, scalar rgb2hsl split ',', $rgb_string;
     say sprintf 'RGB string %s as HSL string is %s', $rgb_string, scalar rgb2hsl split(',', $rgb_string), ":";
@@ -263,8 +270,8 @@ sub demo {
 
     # Converting HSL tuples into available formats
     my @hsl_tuple = (262,52,47);
-    say sprintf 'HSL tuple [%.f %.f %.f] as hex code is %s.', @hsl_tuple, $colors->rgb2hex(hsl2rgb @hsl_tuple);
-    say sprintf 'HSL tuple [%.f %.f %.f] as CSS hex is %s.', @hsl_tuple, $colors->rgb2hex(hsl2rgb @hsl_tuple, '#');
+    say sprintf 'HSL tuple [%.f %.f %.f] as hex code is %s.', @hsl_tuple, rgb2hex hsl2rgb @hsl_tuple;
+    say sprintf 'HSL tuple [%.f %.f %.f] as CSS hex is %s.', @hsl_tuple, rgb2hex hsl2rgb(@hsl_tuple), '#';
     say sprintf 'HSL tuple [%.f %.f %.f] as RGB tuple is [%.2f %.2f %.2f.', @hsl_tuple, (hsl2rgb @hsl_tuple);
     say sprintf 'HSL tuple [%.f %.f %.f] as RGB string is %s.', @hsl_tuple, scalar hsl2rgb @hsl_tuple;
     say sprintf 'HSL tuple [%.f %.f %.f] as RGB string is %s.', @hsl_tuple, scalar hsl2rgb @hsl_tuple, ':';
@@ -274,8 +281,8 @@ sub demo {
 
     # Converting HSL strings into available formats
     my $hsl_string = '262,52,47';
-    say sprintf 'HSL string  %s as hex code is %s.', $hsl_string, $colors->rgb2hex(hsl2rgb split ',', $hsl_string);
-    say sprintf 'HSL string  %s as CSS hex is %s.', $hsl_string, $colors->rgb2hex(hsl2rgb split(',', $hsl_string), '#');
+    say sprintf 'HSL string  %s as hex code is %s.', $hsl_string, rgb2hex hsl2rgb split ',', $hsl_string;
+    say sprintf 'HSL string  %s as CSS hex is %s.', $hsl_string, rgb2hex hsl2rgb(split(',', $hsl_string)), '#';
     say sprintf 'HSL string  %s as RGB tuple is [%.2f %.2f %.2f.', $hsl_string, hsl2rgb split ',', $hsl_string;
     say sprintf 'HSL string  %s as RGB string is %s.', $hsl_string, scalar hsl2rgb split ',', $hsl_string;
     say sprintf 'HSL string  %s as RGB string is %s.', $hsl_string, scalar hsl2rgb split(',', $hsl_string), ':' ;
@@ -285,8 +292,8 @@ sub demo {
 
     # Converting HSV tuples into available formats
     my @hsv_tuple = (329,78,15);
-    say sprintf 'HSV tuple [%.f %.f %.f] as hex code is %s.', @hsv_tuple, $colors->rgb2hex(hsv2rgb @hsv_tuple );
-    say sprintf 'HSV tuple [%.f %.f %.f] as CSS hex is %s.', @hsv_tuple, $colors->rgb2hex(hsv2rgb @hsv_tuple , '#');
+    say sprintf 'HSV tuple [%.f %.f %.f] as hex code is %s.', @hsv_tuple, rgb2hex hsv2rgb @hsv_tuple;
+    say sprintf 'HSV tuple [%.f %.f %.f] as CSS hex is %s.', @hsv_tuple, rgb2hex hsv2rgb(@hsv_tuple), '#';
     say sprintf 'HSV tuple [%.f %.f %.f] as RGB tuple is [%.2f %.2f %.2f.', @hsv_tuple, hsv2rgb @hsv_tuple;
     say sprintf 'HSV tuple [%.f %.f %.f] as RGB string is %s.', @hsv_tuple, scalar hsv2rgb @hsv_tuple;
     say sprintf 'HSV tuple [%.f %.f %.f] as RGB string is %s.', @hsv_tuple, scalar hsv2rgb @hsv_tuple, ':';
@@ -296,8 +303,8 @@ sub demo {
 
     # Converting HSL strings into available formats
     my $hsv_string = '329,78,15';
-    say sprintf 'HSV string  %s as hex code is %s.', $hsv_string, $colors->rgb2hex(hsv2rgb split ',', $hsv_string);
-    say sprintf 'HSV string  %s as CSS hex is %s.', $hsv_string, $colors->rgb2hex(hsv2rgb split(',', $hsv_string), '#');
+    say sprintf 'HSV string  %s as hex code is %s.', $hsv_string, rgb2hex hsv2rgb split ',', $hsv_string;
+    say sprintf 'HSV string  %s as CSS hex is %s.', $hsv_string, rgb2hex hsv2rgb(split(',', $hsv_string)), '#';
     say sprintf 'HSV string  %s as RGB tuple is [%.2f %.2f %.2f.', $hsv_string, hsv2rgb split ',', $hsv_string;
     say sprintf 'HSV string  %s as RGB string is %s.', $hsv_string, scalar hsv2rgb split ',', $hsv_string ;
     say sprintf 'HSV string  %s as RGB string is %s.', $hsv_string, scalar hsv2rgb split(',', $hsv_string), ':';
@@ -311,7 +318,7 @@ sub demo {
     my @base_rgb_tuple = $colors->hex2rgb($base_hex);
     my @cover_rgb_tuple = $colors->hex2rgb($cover_hex);
     my @surface_rgb_tuple = add_overlay @base_rgb_tuple, @cover_rgb_tuple, $cover_rate;
-    my $surface_css_hex = $colors->rgb2hex(@surface_rgb_tuple, '#');
+    my $surface_css_hex = rgb2hex @surface_rgb_tuple, '#';
     say sprintf 'Base color of %s with an overlay of %s as %.4f opacity is %s.',
         $base_hex, $cover_hex, $cover_rate, $surface_css_hex;
 
@@ -319,23 +326,23 @@ sub demo {
     # such as to add an action state to an elevated surface in Material UI themes
     my @second_rgb_tuple = $colors->hex2rgb($second_hex);
     my @state_rgb_tuple = double_overlay @base_rgb_tuple, @cover_rgb_tuple, $cover_rate, @second_rgb_tuple, $second_rate;
-    my $state_css_hex = $colors->rgb2hex(@state_rgb_tuple, '#');
+    my $state_css_hex = rgb2hex @state_rgb_tuple, '#';
     say sprintf 'Adding a second overlay of %s at %.4f opacity is %s.',
         $second_hex, $second_rate, $state_css_hex;
 }
 
 my %surface_level_covers = (
-# Level     Transparency
- '00dp' =>  .00,
- '01dp' =>  .05,
- '02dp' =>  .07,
- '03dp' =>  .08,
- '04dp' =>  .09,
- '06dp' =>  .11,
- '08dp' =>  .12,
- '12dp' =>  .14,
- '16dp' =>  .15,
- '24dp' =>  .16,
+    # Level   Transparency
+    '00dp' =>  .00,
+    '01dp' =>  .05,
+    '02dp' =>  .07,
+    '03dp' =>  .08,
+    '04dp' =>  .09,
+    '06dp' =>  .11,
+    '08dp' =>  .12,
+    '12dp' =>  .14,
+    '16dp' =>  .15,
+    '24dp' =>  .16,
 );
 
 my %state_covers = (
@@ -346,13 +353,11 @@ my %state_covers = (
     dragged  => .08,
     disabled => .12,
 );
- my %dark_text_intensity = (
-     high   => .87,
-     medium => .60,
-     low    => .37,
- );
-
-
+my %dark_text_intensity = (
+    high   => .87,
+    medium => .60,
+    low    => .37,
+);
 
 
 
